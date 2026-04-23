@@ -1,0 +1,28 @@
+# Pip-style fallback dependencies for the MuJoCo pick-place pipeline.
+# Preferred install path is `uv sync`, followed by the DETR install/patch
+# documented in README.md.
+
+torch
+torchvision
+mujoco
+h5py
+numpy
+einops
+matplotlib
+opencv-python
+tqdm
+ipython
+pyyaml
+packaging
+pyquaternion
+mediapy
+
+# ACT model dependency. Must be patched after install:
+#   uv run python scripts/patch_detr.py
+git+https://github.com/Shaka-Labs/detr.git
+
+# Optional real-robot / inherited ACT utilities, not required for the
+# MuJoCo simulation training and evaluation path:
+# dynamixel-sdk
+# rospkg
+# pexpect
