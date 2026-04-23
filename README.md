@@ -1,6 +1,7 @@
 # ACT Pick-and-Place in MuJoCo
 
 This project trains an ACT (Action Chunking with Transformers) policy for a simulated Franka Panda pick-and-place task. The robot observes a front camera image plus joint state, then predicts joint-position and gripper actions to move a cube to a target location.
+Data and media in : https://drive.google.com/drive/folders/19rVGcxVdpwnwyL_A9hor0lhJTVP6OChR?usp=drive_link
 
 The pipeline is fully simulation-based:
 
