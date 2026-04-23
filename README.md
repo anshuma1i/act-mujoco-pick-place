@@ -48,7 +48,7 @@ These are the submission-relevant deliverables requested by the assignment: code
 For Git submission, keep the code and documentation in the repository and provide the large generated artifacts separately. In this workspace, the large artifacts live under `data/` and `checkpoints/` and are intended to be uploaded to Google Drive rather than pushed to GitHub.
 
 - Code:
-  - `[Add repository URL/path here]`
+  - `https://github.com/anshuma1i/act-mujoco-pick-place`
 
 - Demonstration data:
   - `data/pick_place/`
