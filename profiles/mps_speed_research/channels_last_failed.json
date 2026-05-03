@@ -1,0 +1,10 @@
+{
+  "benchmark_name": "channels_last_failed",
+  "status": "failed",
+  "device": "mps",
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "channels_last": true,
+  "failure_stage": "model_memory_format_conversion",
+  "error": "policy.to(memory_format=torch.channels_last) failed because the ACT module contains non-rank-4 buffers/tensors; PyTorch requires rank-4 tensors for channels_last memory format.",
+  "recommendation": "Only retry channels_last with a surgical implementation limited to image tensors and convolutional backbone modules."
+}

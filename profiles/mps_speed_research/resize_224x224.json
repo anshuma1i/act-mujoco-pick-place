@@ -1,0 +1,67 @@
+{
+  "benchmark_name": "resize_224x224",
+  "dataset_dir": "data/panda_pick_place_300_demos",
+  "device": "mps",
+  "torch_version": "2.11.0",
+  "platform": "macOS-26.4.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "mps_built": true,
+  "mps_available": true,
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "PYTORCH_MPS_PREFER_METAL": null,
+  "PYTORCH_MPS_FAST_MATH": null,
+  "batch_size": 8,
+  "image_resolution": [
+    224,
+    224
+  ],
+  "amp_dtype": "none",
+  "sdpa_path": "not_attempted_detr_site_package_attention",
+  "channels_last": false,
+  "torch_compile": false,
+  "benchmark_variant": "real",
+  "benchmark_steps_requested": 40,
+  "benchmark_warmup_steps": 8,
+  "benchmark_steps_completed": 40,
+  "seconds_total_timed": 9.02884412498679,
+  "seconds_per_step": 0.22572110312466975,
+  "samples_per_sec": 35.44196749553124,
+  "timings_sec": {
+    "dataloader_wait_sec": 0.02006612386321649,
+    "transfer_to_device_sec": 0.03637433500261977,
+    "forward_sec": 2.7405375031521544,
+    "backward_sec": 4.4434640859253705,
+    "optimizer_sec": 1.7055982909514569
+  },
+  "timings_sec_per_step": {
+    "dataloader_wait_sec": 0.0005016530965804122,
+    "transfer_to_device_sec": 0.0009093583750654944,
+    "forward_sec": 0.06851343757880386,
+    "backward_sec": 0.11108660214813426,
+    "optimizer_sec": 0.04263995727378642
+  },
+  "breakdown_percent": {
+    "dataloader_wait_sec": 0.22430173689218388,
+    "transfer_to_device_sec": 0.40659703762428384,
+    "forward_sec": 30.634083900081283,
+    "backward_sec": 49.66961826235527,
+    "optimizer_sec": 19.06539906304697
+  },
+  "mps_memory": {
+    "mps_current_allocated_memory": 1116505344,
+    "mps_driver_allocated_memory": 3347677184,
+    "mps_recommended_max_memory": 19069665280
+  },
+  "first_loss": 21.41521644592285,
+  "final_loss": 5.277206897735596,
+  "first_l1": 0.508390486240387,
+  "final_l1": 0.4374336004257202,
+  "first_kl": 2.0906825065612793,
+  "final_kl": 0.4839773178100586,
+  "loss_is_finite": true,
+  "nan_inf_count": 0,
+  "loader_num_workers": 2,
+  "loader_persistent_workers": true,
+  "loader_prefetch_factor": 2,
+  "loader_pin_memory": false
+}
