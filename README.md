@@ -8,38 +8,20 @@ The pipeline is fully simulation-based:
 2. Train an ACT policy on HDF5 demonstrations.
 3. Evaluate the learned policy in MuJoCo, optionally with temporal aggregation and MP4 output.
 
-## Final Result
+## Current Results
 
-The final reported evaluation used the best checkpoint from the 100-demo Panda pick-place run:
+The project was extended beyond the original assignment with 300-demo clean and mixed-success ACT runs. The best current normal-eval result is the 300-clean MPS checkpoint; the newest RunPod continuation trained the 300-mixed model on an RTX 4090.
 
-```text
-Checkpoint: checkpoints/panda_pick_place_100_demos/policy_best.ckpt
-Dataset: data/panda_pick_place_100_demos/ (100 demonstrations)
-Evaluation: 50 episodes
-Temporal aggregation: enabled
-Eval chunk size: 50
-Success: 32/50 = 64%
-Average episode length: 164.5
-Episode length std: 94.0
-Video: checkpoints/panda_pick_place_100_demos/eval_best_50ep_chunk50_tagg.mp4
-Log: logs/eval_pick_place_best_50ep_chunk50_tagg.log
-```
+| Run | Dataset | Checkpoint | Eval | Result | Notes |
+| --- | --- | --- | --- | --- | --- |
+| 100 clean | 100 clean demos | `checkpoints/panda_pick_place_100_demos/policy_best.ckpt` | normal, 50 eps | `30/50 = 60%` | controlled local reference |
+| 150 clean | 150 clean demos | `checkpoints/panda_pick_place_150_demos_chunk50_tagg/policy_best.ckpt` | normal, 50 eps | `46/50 = 92%` | historical reference; `num_queries=50` |
+| 300 clean | 300 clean demos | `checkpoints/act_300_clean_mps/policy_best.ckpt` | normal, 50 eps | `50/50 = 100%` | strict MPS training |
+| 300 clean hard | 300 clean demos | `checkpoints/act_300_clean_mps/policy_best.ckpt` | hard, 50 eps | `44/50 = 88%` | hard reset seed `0` |
+| 300 mixed | 240 clean + 40 recovery + 20 hard-case | `checkpoints/act_300_mixed_cuda4090/policy_best.ckpt` | normal, 50 eps | `49/50 = 98%` | RunPod RTX 4090 |
+| 300 mixed hard | 240 clean + 40 recovery + 20 hard-case | `checkpoints/act_300_mixed_cuda4090/policy_best.ckpt` | hard, 50 eps | `40/50 = 80%` | RunPod RTX 4090, hard reset seed `0` |
 
-## Experiment Comparison
-
-All three comparison runs below use the same evaluation setting:
-
-- evaluation episodes: `50`
-- evaluation chunk size: `50`
-- temporal aggregation: `on`
-
-| Demonstrations | Artifact Folder | Result |
-| --- | --- | --- |
-| 50 demos | `checkpoints/panda_pick_place_50_demos_chunk50_tagg/` | `17/50 = 34%` |
-| 100 demos | `checkpoints/panda_pick_place_100_demos/` | `32/50 = 64%` |
-| 150 demos | `checkpoints/panda_pick_place_150_demos_chunk50_tagg/` | `39/50 = 78%` |
-
-The 100-demo run is the primary final run for this workspace. The 50-demo and 150-demo folders are preserved as comparative experiment artifacts and should not be overwritten.
+Detailed results and caveats are in `reports/experiment_comparison.md`. Large checkpoints, datasets, and videos are intentionally kept out of Git.
 
 ## Deliverables / Artifact Locations
 
@@ -57,6 +39,8 @@ For Git submission, keep the code and documentation in the repository and provid
   - 100-demo final run: `checkpoints/panda_pick_place_100_demos/policy_best.ckpt`
   - 50-demo comparison: `checkpoints/panda_pick_place_50_demos_chunk50_tagg/policy_best.ckpt`
   - 150-demo comparison: `checkpoints/panda_pick_place_150_demos_chunk50_tagg/policy_best.ckpt`
+  - 300-clean extension: `checkpoints/act_300_clean_mps/policy_best.ckpt`
+  - 300-mixed RunPod extension: `checkpoints/act_300_mixed_cuda4090/policy_best.ckpt`
 
 - Training curves:
   - 100-demo: `checkpoints/panda_pick_place_100_demos/train_val_loss_seed_42.png`
@@ -72,11 +56,11 @@ For Git submission, keep the code and documentation in the repository and provid
   - 150-demo comparison video: `checkpoints/panda_pick_place_150_demos_chunk50_tagg/eval_best_50ep.mp4`
 
 - Evaluation metrics:
-  - 100-demo final comparison log: `logs/eval_pick_place_best_50ep_chunk50_tagg.log`
-  - 50-demo / 150-demo comparison numbers are reported in the final report
+  - structured JSON/CSV metrics under `eval_results/`
+  - RunPod notes under `reports/runpod/`
 
 - Report:
-  - attached in email/submission
+  - `reports/experiment_comparison.md`
 
 The exact command that produced the final reported result was:
 
@@ -129,7 +113,10 @@ There is also a `checkpoints/panda_pick_place_50_demos_backup_20260423_030830/` 
   Compatibility symlink to `data/panda_pick_place_100_demos/` for older commands that use `--task pick_place`.
 
 - `data/panda_pick_place_300_demos/`  
-  Self-motivated extension dataset with 300 successful scripted-expert demonstrations. No ACT checkpoint has been trained from this dataset yet.
+  Self-motivated extension dataset with 300 successful scripted-expert demonstrations. Trained checkpoint artifacts are under `checkpoints/act_300_clean_mps/`.
+
+- `data/panda_pick_place_300_mixed_success/`  
+  Success-only mixed extension dataset with 240 clean, 40 recovery, and 20 hard-case demos. RunPod checkpoint artifacts are under `checkpoints/act_300_mixed_cuda4090/`.
 
 - `checkpoints/panda_pick_place_100_demos/`  
   Main 100-demo run artifacts. This is the primary final-results folder.
@@ -139,6 +126,12 @@ There is also a `checkpoints/panda_pick_place_50_demos_backup_20260423_030830/` 
 
 - `checkpoints/panda_pick_place_150_demos_chunk50_tagg/`  
   Comparative 150-demo experiment artifacts for `chunk_size=50` and temporal aggregation.
+
+- `checkpoints/act_300_clean_mps/`  
+  300-clean ACT extension trained on Apple MPS.
+
+- `checkpoints/act_300_mixed_cuda4090/`  
+  300-mixed ACT extension trained on RunPod RTX 4090.
 
 - `checkpoints/panda_pick_place_50_demos_backup_20260423_030830/`  
   Older backup/provenance folder from an earlier 50-demo run; kept for traceability, not as the main comparison folder.
