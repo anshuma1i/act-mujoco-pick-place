@@ -1,0 +1,11 @@
+{
+  "benchmark_name": "batch64_failed",
+  "status": "failed",
+  "device": "mps",
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "batch_size": 64,
+  "image_resolution": [480, 640],
+  "failure_stage": "benchmark_runtime",
+  "error": "The batch-64 pilot became impractically slow/hung during the short diagnostic run and was interrupted.",
+  "recommendation": "Treat batch size 64 as impractical or memory-pressure-risky for this MPS setup at 480x640."
+}

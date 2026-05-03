@@ -1,0 +1,67 @@
+{
+  "benchmark_name": "synthetic_mps",
+  "dataset_dir": "data/panda_pick_place_300_demos",
+  "device": "mps",
+  "torch_version": "2.11.0",
+  "platform": "macOS-26.4.1-arm64-arm-64bit",
+  "machine": "arm64",
+  "mps_built": true,
+  "mps_available": true,
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "PYTORCH_MPS_PREFER_METAL": null,
+  "PYTORCH_MPS_FAST_MATH": null,
+  "batch_size": 8,
+  "image_resolution": [
+    480,
+    640
+  ],
+  "amp_dtype": "none",
+  "sdpa_path": "not_attempted_detr_site_package_attention",
+  "channels_last": false,
+  "torch_compile": false,
+  "benchmark_variant": "synthetic_mps",
+  "benchmark_steps_requested": 40,
+  "benchmark_warmup_steps": 8,
+  "benchmark_steps_completed": 40,
+  "seconds_total_timed": 22.896476667025127,
+  "seconds_per_step": 0.5724119166756282,
+  "samples_per_sec": 13.97594942897285,
+  "timings_sec": {
+    "dataloader_wait_sec": 0.0,
+    "transfer_to_device_sec": 0.0,
+    "forward_sec": 7.836320463044103,
+    "backward_sec": 13.2678583759116,
+    "optimizer_sec": 1.710974874033127
+  },
+  "timings_sec_per_step": {
+    "dataloader_wait_sec": 0.0,
+    "transfer_to_device_sec": 0.0,
+    "forward_sec": 0.19590801157610258,
+    "backward_sec": 0.33169645939779,
+    "optimizer_sec": 0.04277437185082818
+  },
+  "breakdown_percent": {
+    "dataloader_wait_sec": 0.0,
+    "transfer_to_device_sec": 0.0,
+    "forward_sec": 34.34699832235989,
+    "backward_sec": 58.15371021742498,
+    "optimizer_sec": 7.499291460215132
+  },
+  "mps_memory": {
+    "mps_current_allocated_memory": 2023186944,
+    "mps_driver_allocated_memory": 5935595520,
+    "mps_recommended_max_memory": 19069665280
+  },
+  "first_loss": 9.610408782958984,
+  "final_loss": 3.3698112964630127,
+  "first_l1": 0.2988860607147217,
+  "final_l1": 0.2825792729854584,
+  "first_kl": 0.9311522245407104,
+  "final_kl": 0.30872321128845215,
+  "loss_is_finite": true,
+  "nan_inf_count": 0,
+  "loader_num_workers": 2,
+  "loader_persistent_workers": true,
+  "loader_prefetch_factor": 2,
+  "loader_pin_memory": false
+}

@@ -1,0 +1,11 @@
+{
+  "benchmark_name": "fast_math_failed",
+  "status": "failed",
+  "device": "mps",
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "PYTORCH_MPS_PREFER_METAL": null,
+  "PYTORCH_MPS_FAST_MATH": "1",
+  "failure_stage": "strict_mps_startup",
+  "error": "torch.backends.mps.is_available() returned false with PYTORCH_MPS_FAST_MATH=1, so strict --mps_only refused CPU/CUDA fallback.",
+  "recommendation": "Do not use PYTORCH_MPS_FAST_MATH=1 on this build for this project unless the MPS availability issue is resolved."
+}

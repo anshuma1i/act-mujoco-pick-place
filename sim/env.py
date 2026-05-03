@@ -122,6 +122,7 @@ class PandaPickPlaceEnv:
         cube_joint_id = mujoco.mj_name2id(
             self.model, mujoco.mjtObj.mjOBJ_JOINT, 'cube_joint')
         self._cube_qpos_addr = self.model.jnt_qposadr[cube_joint_id]
+        self._cube_qvel_addr = self.model.jnt_dofadr[cube_joint_id]
 
         # Offscreen renderer. Disable only for fast/headless physics smoke checks;
         # demonstration collection and ACT training data require rendered images.
@@ -184,6 +185,55 @@ class PandaPickPlaceEnv:
         for _ in range(50):
             mujoco.mj_step(self.model, self.data)
 
+        return self._get_obs()
+
+    def set_cube_pose(self, xy, z=None, settle_steps=0):
+        """Set the cube pose inside the table workspace."""
+        x = float(np.clip(xy[0], *CUBE_X_RANGE))
+        y = float(np.clip(xy[1], *CUBE_Y_RANGE))
+        if z is None:
+            z = TABLE_HEIGHT + CUBE_SIZE + 0.001
+
+        addr = self._cube_qpos_addr
+        self.data.qpos[addr:addr+3] = [x, y, z]
+        self.data.qpos[addr+3:addr+7] = [1, 0, 0, 0]
+        vaddr = self._cube_qvel_addr
+        self.data.qvel[vaddr:vaddr+6] = 0
+        mujoco.mj_forward(self.model, self.data)
+        for _ in range(settle_steps):
+            mujoco.mj_step(self.model, self.data)
+
+    def set_target_pose(self, xy):
+        """Set the visual target site inside the table workspace."""
+        x = float(np.clip(xy[0], *TARGET_X_RANGE))
+        y = float(np.clip(xy[1], *TARGET_Y_RANGE))
+        self.model.site_pos[self._target_site_id] = [x, y, TABLE_HEIGHT + 0.001]
+        mujoco.mj_forward(self.model, self.data)
+
+    def set_cube_and_target(self, cube_xy, target_xy, settle_steps=50):
+        """Set cube and target poses, then let the scene settle."""
+        self.set_cube_pose(cube_xy, settle_steps=0)
+        self.set_target_pose(target_xy)
+        self.data.qvel[:] = 0
+        mujoco.mj_forward(self.model, self.data)
+        for _ in range(settle_steps):
+            mujoco.mj_step(self.model, self.data)
+
+    def perturb_arm_qpos(self, delta):
+        """Apply a small joint-space perturbation to the arm start state."""
+        qpos = self.data.qpos[:self.ARM_JOINTS].copy() + np.asarray(delta)
+        for i in range(self.ARM_JOINTS):
+            lo = self.model.jnt_range[i, 0]
+            hi = self.model.jnt_range[i, 1]
+            if lo < hi:
+                qpos[i] = np.clip(qpos[i], lo + 0.05, hi - 0.05)
+        self.data.qpos[:self.ARM_JOINTS] = qpos
+        self.data.qvel[:self.ARM_JOINTS] = 0
+        self.data.ctrl[:self.ARM_JOINTS] = qpos
+        mujoco.mj_forward(self.model, self.data)
+
+    def get_obs(self):
+        """Public observation accessor for scripted collection variants."""
         return self._get_obs()
 
     def step(self, action):

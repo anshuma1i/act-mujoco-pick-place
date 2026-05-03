@@ -1,0 +1,40 @@
+{
+  "variant": "dummy_images",
+  "dataset_dir": "data/panda_pick_place_300_demos",
+  "device": "mps",
+  "mps_only": true,
+  "profile_batches": 10,
+  "train_batches_timed": 10,
+  "batch_size": 8,
+  "image_resize": null,
+  "loader_num_workers": 0,
+  "loader_persistent_workers": false,
+  "loader_prefetch_factor": null,
+  "loader_pin_memory": false,
+  "total_wall_time_sec": 8.478162207989953,
+  "timings_sec": {
+    "dataloader_wait_sec": 0.1212540409178473,
+    "transfer_to_device_sec": 0.0227687920560129,
+    "forward_loss_sec": 2.341374167066533,
+    "backward_sec": 3.691172165912576,
+    "optimizer_step_sec": 0.48544704203959554,
+    "validation_forward_sec": 1.3435411237878725,
+    "checkpoint_save_sec": 0.36958125000819564
+  },
+  "avg_sec_per_train_batch": 0.8478162207989953,
+  "samples_per_sec": 9.436007242773291,
+  "breakdown_percent": {
+    "dataloader_wait_sec": 1.4477854871740132,
+    "transfer_to_device_sec": 0.27186167528645583,
+    "forward_loss_sec": 27.956243878253517,
+    "backward_sec": 44.072968224536204,
+    "optimizer_step_sec": 5.79628667990257,
+    "validation_forward_sec": 16.042016626558787,
+    "checkpoint_save_sec": 4.412837428288454
+  },
+  "mps_memory": {
+    "mps_current_allocated_memory": 2076451840,
+    "mps_driver_allocated_memory": 5354782720,
+    "mps_recommended_max_memory": 19069665280
+  }
+}

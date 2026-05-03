@@ -1,0 +1,117 @@
+======================================================================
+RUNPOD ACT TRAINING SUMMARY
+======================================================================
+Time: 2026-05-02 12:22:44.659414
+Project: /workspace/ACT_runpod_export
+
+GPU
+----------------------------------------------------------------------
+NVIDIA GeForce RTX 4090, 24564 MiB, 2 MiB, 0 %
+
+Disk
+----------------------------------------------------------------------
+Filesystem                   Size  Used Avail Use% Mounted on
+mfs#us-nc-1.runpod.net:9421  1.2P  892T  310T  75% /workspace
+
+Python / Torch
+----------------------------------------------------------------------
+torch: 2.6.0+cu124
+cuda available: True
+device: NVIDIA GeForce RTX 4090
+
+Expert Dataset
+----------------------------------------------------------------------
+Dataset path: /workspace/ACT_runpod_export/data/panda_pick_place_300_mixed_success
+Dataset size: 77.27 GB
+HDF5 episodes: 300
+Metadata file: /workspace/ACT_runpod_export/data/panda_pick_place_300_mixed_success/metadata.json
+  total_successful_demos: 300
+  num_clean: 240
+  num_recovery: 40
+  num_hard_case: 20
+  target_num_clean: 240
+  target_num_recovery: 40
+  target_num_hard_case: 20
+  total_attempts: 352
+  failed_attempts: 52
+  expert_collection_success_rate: 0.8522727272727273
+  environment_name: PandaPickPlaceEnv
+  robot: Franka Panda
+  action_dim: 8
+  qpos_dim: 8
+  qvel_dim: 8
+  image_keys: ['front']
+  image_resolution: 480x640x3
+  collection_timestamp: 2026-05-02T09:30:34.326284+00:00
+  collection_command: sim/collect_data.py --task pick_place --num_clean 240 --num_recovery 40 --num_hard 20 --dataset_dir data/panda_pick_place_300_mixed_success --failed_dir data/panda_pick_place_failed_analysis_only
+  failed_analysis_dir: data/panda_pick_place_failed_analysis_only
+  episode_metadata_count: 300
+  collection_environment: {'requested_DEVICE': None, 'torch_DEVICE_after_config_import': 'cuda', 'PYTORCH_ENABLE_MPS_FALLBACK': None, 'requested_MUJOCO_GL': 'egl', 'mujoco_renderer': 'macOS CoreGraphics/CGL offscreen renderer when run from a GUI-capable session'}
+
+Training Outputs
+----------------------------------------------------------------------
+Checkpoint dir: /workspace/ACT_runpod_export/checkpoints/act_300_mixed_cuda4090
+Checkpoint dir size: 3.76 GB
+policy_best.ckpt: 320.49 MB
+policy_last.ckpt: 320.49 MB
+dataset_stats.pkl: 9.83 KB
+epoch_timing.csv: 166.91 KB
+train_val_loss_seed_42.png: 16.35 KB
+train_val_l1_seed_42.png: 35.98 KB
+train_val_kl_seed_42.png: 12.53 KB
+Epoch timing rows: 2000
+Last epoch timing row: {'timestamp': '2026-05-02T11:04:36+0000', 'epoch': '1999', 'train_time_sec': '2.2190', 'val_time_sec': '0.4419', 'checkpoint_time_sec': '0.8582', 'plot_time_sec': '0.0000', 'total_epoch_time_sec': '3.5362', 'samples_per_sec': '108.1565', 'batches_per_sec': '13.5196', 'mps_current_allocated_memory': '', 'mps_driver_allocated_memory': '', 'mps_recommended_max_memory': ''}
+
+Evaluation Results
+----------------------------------------------------------------------
+Normal eval:
+  checkpoint_path: checkpoints/act_300_mixed_cuda4090/policy_best.ckpt
+  stats_path: checkpoints/act_300_mixed_cuda4090/dataset_stats.pkl
+  num_episodes: 50
+  eval_mode: normal
+  seed: 5000
+  episode_seeds: [5000, 5001, 5002, 5003, 5004, 5005, 5006, 5007, 5008, 5009, 5010, 5011, 5012, 5013, 5014, 5015, 5016, 5017, 5018, 5019, 5020, 5021, 5022, 5023, 5024, 5025, 5026, 5027, 5028, 5029, 5030, 5031, 5032, 5033, 5034, 5035, 5036, 5037, 5038, 5039, 5040, 5041, 5042, 5043, 5044, 5045, 5046, 5047, 5048, 5049]
+  temporal_aggregation: True
+  checkpoint_num_queries: 100
+  eval_chunk_size: 100
+  success_count: 49
+  success_rate: 0.98
+  average_final_cube_goal_distance: 0.014087336550811132
+  median_final_cube_goal_distance: 0.01113871523173519
+  std_final_cube_goal_distance: 0.012656572820671005
+  average_episode_length: 101.26
+  std_episode_length: 33.14502074218691
+  video_path: eval_results/act_300_mixed_cuda4090/eval_best_50ep.mp4
+  hard_eval_definition: normal random reset
+  device: cuda
+  mps_only: False
+  pytorch_mps_fallback: None
+Hard eval:
+  checkpoint_path: checkpoints/act_300_mixed_cuda4090/policy_best.ckpt
+  stats_path: checkpoints/act_300_mixed_cuda4090/dataset_stats.pkl
+  num_episodes: 50
+  eval_mode: hard
+  seed: 0
+  episode_seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+  temporal_aggregation: True
+  checkpoint_num_queries: 100
+  eval_chunk_size: 100
+  success_count: 40
+  success_rate: 0.8
+  average_final_cube_goal_distance: 0.03852971397147043
+  median_final_cube_goal_distance: 0.015432636185671488
+  std_final_cube_goal_distance: 0.05193998951697668
+  average_episode_length: 149.6
+  std_episode_length: 67.60236682247152
+  video_path: eval_results/act_300_mixed_cuda4090_hard/eval_hard_50ep.mp4
+  hard_eval_definition: cube and target sampled near valid workspace boundaries with object-goal distance >= 0.22m
+  device: cuda
+  mps_only: False
+  pytorch_mps_fallback: None
+Video: /workspace/ACT_runpod_export/eval_results/act_300_mixed_cuda4090/eval_best_50ep.mp4 | size: 82.94 MB
+Video: /workspace/ACT_runpod_export/eval_results/act_300_mixed_cuda4090_hard/eval_hard_50ep.mp4 | size: 93.70 MB
+
+Download Archives
+----------------------------------------------------------------------
+runpod_act_minimal_outputs.tar.gz: 762.93 MB
+runpod_act_outputs.tar.gz: 3.63 GB

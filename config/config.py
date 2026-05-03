@@ -1,6 +1,8 @@
 import os
-# Fallback to CPU when an MPS operation is not implemented by PyTorch.
-os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = "1"
+# Preserve an explicit caller choice. Legacy runs keep PyTorch's CPU fallback
+# for unsupported MPS ops, while strict MPS training sets this to "0" before
+# importing this module.
+os.environ.setdefault('PYTORCH_ENABLE_MPS_FALLBACK', "1")
 import torch
 
 # data directory
@@ -10,7 +12,10 @@ DATA_DIR = 'data/'
 CHECKPOINT_DIR = 'checkpoints/'
 
 # device
-if torch.backends.mps.is_available():
+requested_device = os.environ.get('DEVICE')
+if requested_device:
+    device = requested_device
+elif torch.backends.mps.is_available():
     device = 'mps'
 elif torch.cuda.is_available():
     device = 'cuda'

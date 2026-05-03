@@ -2,6 +2,7 @@ import os
 import h5py
 import torch
 import numpy as np
+import torch.nn.functional as F
 from einops import rearrange
 from torch.utils.data import DataLoader
 
@@ -12,12 +13,13 @@ import IPython
 e = IPython.embed
 
 class EpisodicDataset(torch.utils.data.Dataset):
-    def __init__(self, episode_ids, dataset_dir, camera_names, norm_stats):
+    def __init__(self, episode_ids, dataset_dir, camera_names, norm_stats, image_resize=None):
         super(EpisodicDataset).__init__()
         self.episode_ids = episode_ids
         self.dataset_dir = dataset_dir
         self.camera_names = camera_names
         self.norm_stats = norm_stats
+        self.image_resize = image_resize
         self.is_sim = None
         #self.__getitem__(0) # initialize self.is_sim
 
@@ -53,8 +55,8 @@ class EpisodicDataset(torch.utils.data.Dataset):
 
         self.is_sim = is_sim
         padded_action = np.zeros(original_action_shape, dtype=np.float32)
-        padded_action[:action_len] = action
-        is_pad = np.zeros(episode_len)
+        padded_action[:action_len] = action.astype(np.float32, copy=False)
+        is_pad = np.zeros(episode_len, dtype=bool)
         is_pad[action_len:] = 1
 
         # new axis for different cameras
@@ -64,13 +66,20 @@ class EpisodicDataset(torch.utils.data.Dataset):
         all_cam_images = np.stack(all_cam_images, axis=0)
 
         # construct observations
-        image_data = torch.from_numpy(all_cam_images)
-        qpos_data = torch.from_numpy(qpos).float()
-        action_data = torch.from_numpy(padded_action).float()
+        image_data = torch.from_numpy(all_cam_images).float()
+        qpos_data = torch.from_numpy(qpos.astype(np.float32, copy=False))
+        action_data = torch.from_numpy(padded_action)
         is_pad = torch.from_numpy(is_pad).bool()
 
         # channel last
         image_data = torch.einsum('k h w c -> k c h w', image_data)
+        if self.image_resize is not None:
+            image_data = F.interpolate(
+                image_data,
+                size=self.image_resize,
+                mode='bilinear',
+                align_corners=False,
+            )
 
         # normalize image and change dtype to float
         image_data = image_data / 255.0
@@ -89,8 +98,8 @@ def get_norm_stats(dataset_dir, num_episodes):
             qpos = root['/observations/qpos'][()]
             qvel = root['/observations/qvel'][()]
             action = root['/action'][()]
-        all_qpos_data.append(torch.from_numpy(qpos))
-        all_action_data.append(torch.from_numpy(action))
+        all_qpos_data.append(torch.from_numpy(qpos.astype(np.float32, copy=False)))
+        all_action_data.append(torch.from_numpy(action.astype(np.float32, copy=False)))
     all_qpos_data = torch.stack(all_qpos_data)
     all_action_data = torch.stack(all_action_data)
     all_action_data = all_action_data
@@ -105,14 +114,19 @@ def get_norm_stats(dataset_dir, num_episodes):
     qpos_std = all_qpos_data.std(dim=[0, 1], keepdim=True)
     qpos_std = torch.clip(qpos_std, 1e-2, np.inf) # clipping
 
-    stats = {"action_mean": action_mean.numpy().squeeze(), "action_std": action_std.numpy().squeeze(),
-             "qpos_mean": qpos_mean.numpy().squeeze(), "qpos_std": qpos_std.numpy().squeeze(),
-             "example_qpos": qpos}
+    stats = {"action_mean": action_mean.numpy().squeeze().astype(np.float32),
+             "action_std": action_std.numpy().squeeze().astype(np.float32),
+             "qpos_mean": qpos_mean.numpy().squeeze().astype(np.float32),
+             "qpos_std": qpos_std.numpy().squeeze().astype(np.float32),
+             "example_qpos": qpos.astype(np.float32, copy=False)}
 
     return stats
 
 
-def load_data(dataset_dir, num_episodes, camera_names, batch_size_train, batch_size_val):
+def load_data(dataset_dir, num_episodes, camera_names, batch_size_train, batch_size_val,
+              device_type=None, mps_only=False, num_workers=None,
+              persistent_workers=False, prefetch_factor=None,
+              pin_memory=None, image_resize=None):
     print(f'\nData from: {dataset_dir}\n')
     # obtain train test split
     train_ratio = 0.8
@@ -132,15 +146,24 @@ def load_data(dataset_dir, num_episodes, camera_names, batch_size_train, batch_s
     norm_stats = get_norm_stats(dataset_dir, num_episodes)
 
     # construct dataset and dataloader
-    train_dataset = EpisodicDataset(train_indices, dataset_dir, camera_names, norm_stats)
-    val_dataset = EpisodicDataset(val_indices, dataset_dir, camera_names, norm_stats)
-    use_cuda = torch.cuda.is_available()
+    train_dataset = EpisodicDataset(
+        train_indices, dataset_dir, camera_names, norm_stats, image_resize=image_resize
+    )
+    val_dataset = EpisodicDataset(
+        val_indices, dataset_dir, camera_names, norm_stats, image_resize=image_resize
+    )
+    use_cuda = (device_type == 'cuda') and torch.cuda.is_available() and not mps_only
+    if num_workers is None:
+        num_workers = 1 if use_cuda else 0
+    if pin_memory is None:
+        pin_memory = use_cuda
     loader_kwargs = {
-        "pin_memory": use_cuda,
-        "num_workers": 1 if use_cuda else 0,
+        "pin_memory": pin_memory,
+        "num_workers": num_workers,
     }
     if loader_kwargs["num_workers"] > 0:
-        loader_kwargs["prefetch_factor"] = 1
+        loader_kwargs["persistent_workers"] = persistent_workers
+        loader_kwargs["prefetch_factor"] = 1 if prefetch_factor is None else prefetch_factor
 
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size_train, shuffle=True, **loader_kwargs)
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size_val, shuffle=True, **loader_kwargs)
@@ -211,7 +234,7 @@ def get_image(images, camera_names, device='cpu'):
         curr_image = rearrange(images[cam_name], 'h w c -> c h w')
         curr_images.append(curr_image)
     curr_image = np.stack(curr_images, axis=0)
-    curr_image = torch.from_numpy(curr_image / 255.0).float().to(device).unsqueeze(0)
+    curr_image = torch.from_numpy(curr_image).to(device=device, dtype=torch.float32).unsqueeze(0) / 255.0
     return curr_image
 
 def compute_dict_mean(epoch_dicts):

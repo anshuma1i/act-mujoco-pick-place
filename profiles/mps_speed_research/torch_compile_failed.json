@@ -1,0 +1,10 @@
+{
+  "benchmark_name": "torch_compile_failed",
+  "status": "failed",
+  "device": "mps",
+  "PYTORCH_ENABLE_MPS_FALLBACK": "0",
+  "torch_compile": true,
+  "failure_stage": "mps_inductor_compile",
+  "error": "torch.compile(model, backend='inductor') failed during generated Metal shader compilation with no buffer resource location available for several input pointers.",
+  "recommendation": "Do not use torch.compile for this ACT/MPS run unless PyTorch MPS Inductor support improves."
+}
