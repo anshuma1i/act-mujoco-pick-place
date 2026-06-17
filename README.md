@@ -24,11 +24,7 @@ The project was extended beyond the original assignment with 300-demo clean and 
 
 Detailed results and caveats are in `reports/experiment_comparison.md`. Large checkpoints, datasets, and videos are intentionally kept out of Git.
 
-## Deliverables / Artifact Locations
-
-These are the submission-relevant deliverables requested by the assignment: code, demonstration data, trained checkpoint, training curves, evaluation video, evaluation metrics, and report.
-
-For Git submission, keep the code and documentation in the repository and provide the large generated artifacts separately. In this workspace, the large artifacts live under `data/` and `checkpoints/` and are intended to be uploaded to Google Drive rather than pushed to GitHub.
+## Artifact Locations
 
 - Code:
   - `https://github.com/anshuma1i/act-mujoco-pick-place`
